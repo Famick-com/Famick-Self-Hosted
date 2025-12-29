@@ -1,0 +1,6 @@
+[submodule "homemanagement"]
+	path = homemanagement
+	url = git@github.com:Famick-com/HomeManagement.git
+[submodule "homemanagement-shared"]
+	path = homemanagement-shared
+	url = git@github.com:Famick-com/HomeManagement-Shared.git
