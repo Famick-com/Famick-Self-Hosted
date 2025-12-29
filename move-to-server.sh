@@ -2,16 +2,20 @@
 set -e
 
 if [ $# -lt 2 ]; then
-    echo "Usage: $0 <user@server> <remote-path>"
+    echo "Usage: $0 <user@server> <remote-path> [platform]"
     echo "Example: $0 k6shm@homebot.therien.family /home/k6shm"
+    echo "Example: $0 k6shm@homebot.therien.family /home/k6shm linux/arm64"
+    echo ""
+    echo "Platforms: linux/amd64 (default), linux/arm64"
     exit 1
 fi
 
 SERVER="$1"
 REMOTE_PATH="$2"
+PLATFORM="${3:-linux/amd64}"
 
-echo "Building image..."
-docker build -t famick/homemanagement:latest .
+echo "Building image for $PLATFORM..."
+docker buildx build --platform "$PLATFORM" -t famick/homemanagement:latest --load .
 
 echo "Saving image..."
 docker save famick/homemanagement:latest | gzip > homemanagement.tar.gz

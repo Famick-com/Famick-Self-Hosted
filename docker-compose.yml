@@ -42,9 +42,11 @@ services:
       - "4431:443"
     volumes:
       - ./certs:/https:ro
+      - ./config:/app/config:ro
       - ./plugins:/app/plugins
       - ./logs:/app/logs
       - ./uploads:/app/wwwroot/uploads
+      - ./keys:/root/.aspnet/DataProtection-Keys
     depends_on:
       postgres:
         condition: service_healthy

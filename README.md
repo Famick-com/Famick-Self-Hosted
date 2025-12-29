@@ -20,7 +20,17 @@ Open-source household management system for inventory tracking, recipe managemen
 
 ## Getting Started
 
-### 1. Create a Project Directory
+### 1. Create the Application Directory
+
+On Ubuntu/Debian servers, the recommended location is `/opt/homemanagement`:
+
+```bash
+sudo mkdir -p /opt/homemanagement
+sudo chown -R $USER:$USER /opt/homemanagement
+cd /opt/homemanagement
+```
+
+For local development or other systems:
 
 ```bash
 mkdir homemanagement && cd homemanagement
@@ -104,7 +114,20 @@ JWT_SECRET_KEY=your-random-secret-key-at-least-32-characters-long
 ### 4. Create Volume Directories
 
 ```bash
-mkdir -p plugins logs uploads
+mkdir -p plugins logs uploads certs keys
+```
+
+Your directory structure should look like:
+
+```
+/opt/homemanagement/
+├── docker-compose.yml
+├── .env
+├── plugins/
+├── logs/
+├── uploads/
+├── certs/
+└── keys/
 ```
 
 ### 5. Start the Application
@@ -125,9 +148,11 @@ The application uses several volume mounts for persistent data:
 
 | Host Path | Container Path | Purpose |
 |-----------|----------------|---------|
+| `./config` | `/app/config` | Configuration overrides (appsettings.json). See [Configuration File](#configuration-file). |
 | `./plugins` | `/app/plugins` | Product lookup plugins and their configuration. Place plugin DLLs and `config.json` here. |
 | `./logs` | `/app/logs` | Application log files for debugging and monitoring. |
 | `./uploads` | `/app/wwwroot/uploads` | User-uploaded files such as recipe images and product photos. |
+| `./keys` | `/root/.aspnet/DataProtection-Keys` | Encryption keys for auth cookies. Persists user sessions across restarts. |
 | `postgres_data` | `/var/lib/postgresql/data` | PostgreSQL database storage (Docker named volume). |
 
 ### Plugins Directory
@@ -181,6 +206,84 @@ volumes:
 
 Place your `.pfx` certificate file in the `./certs` directory.
 
+### Configuration File
+
+You can override application settings by creating `config/appsettings.json`:
+
+```bash
+mkdir -p config
+```
+
+Example `config/appsettings.json`:
+```json
+{
+  "ReverseProxy": {
+    "TrustedNetworks": ["172.16.0.0/12", "10.0.0.0/8"]
+  }
+}
+```
+
+This file is mounted read-only and takes precedence over default settings.
+
+### Reverse Proxy Configuration
+
+When running behind nginx or another reverse proxy, the application automatically handles forwarded headers. By default, it trusts all proxies (suitable for Docker environments).
+
+For stricter security, configure trusted proxies in `config/appsettings.json`:
+
+```json
+{
+  "ReverseProxy": {
+    "TrustedProxies": ["192.168.1.100", "10.0.0.1"],
+    "TrustedNetworks": ["172.16.0.0/12"]
+  }
+}
+```
+
+| Setting | Description | Example |
+|---------|-------------|---------|
+| `TrustedProxies` | Specific proxy IP addresses | `["192.168.1.100"]` |
+| `TrustedNetworks` | CIDR ranges to trust | `["172.16.0.0/12", "10.0.0.0/8"]` |
+
+Common network ranges:
+- Docker bridge: `172.17.0.0/16`
+- Docker compose: `172.16.0.0/12`
+- Kubernetes: `10.0.0.0/8`
+
+Example nginx configuration:
+```nginx
+location / {
+    proxy_pass http://homemanagement-web:80;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-Host $host;
+}
+```
+
+#### Nginx Proxy Manager
+
+If using [Nginx Proxy Manager](https://nginxproxymanager.com/):
+
+1. Add a new Proxy Host
+2. Set the **Domain Names** to your domain
+3. Set **Forward Hostname/IP** to the container name or IP (e.g., `homemanagement-web`)
+4. Set **Forward Port** to `80`
+5. Enable **Block Common Exploits** and **Websockets Support**
+6. Configure SSL under the **SSL** tab (e.g., Let's Encrypt)
+
+The default configuration works out of the box. For custom headers, use the **Custom locations** tab (not the Advanced tab) and add a location for `/`.
+
+#### Diagnostic Endpoint
+
+To verify your proxy configuration is working correctly, access:
+```
+https://your-domain/api/setup/diagnostics
+```
+
+This returns information about how the application sees the incoming request, including forwarded headers, detected scheme, and client IP.
+
 ## Optional: Database Administration
 
 To include pgAdmin for database management:
@@ -218,7 +321,13 @@ docker exec -i homemanagement-db psql -U homemanagement homemanagement < backup.
 
 ### Full Backup
 
-Back up these directories:
+Back up these directories (from `/opt/homemanagement/`):
+
+```bash
+tar -czvf homemanagement-backup.tar.gz plugins uploads
+```
+
+Or individually:
 - `./plugins` - Plugin configuration
 - `./uploads` - User uploads
 - Database (see above)

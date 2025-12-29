@@ -1,7 +1,7 @@
 # Famick Home Management - Self-Hosted Docker Image
 # Build context: repository root (contains homemanagement and homemanagement-shared submodules)
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0-preview AS base
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
@@ -38,6 +38,12 @@ RUN dotnet publish -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
+
+# Install Kerberos libraries for Npgsql (eliminates warning)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libkrb5-3 \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY --from=publish /app/publish .
 
 # Health check
