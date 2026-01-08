@@ -77,6 +77,7 @@ services:
       - JwtSettings__Audience=http://localhost
       - JwtSettings__AccessTokenExpirationMinutes=15
       - JwtSettings__RefreshTokenExpirationDays=7
+      - Geoapify__ApiKey=${GEOAPIFY_API_KEY:-}
     ports:
       - "5000:80"
     volumes:
@@ -109,6 +110,9 @@ DB_PASSWORD=your_secure_database_password
 
 # JWT Authentication (REQUIRED: change to a random string of at least 32 characters)
 JWT_SECRET_KEY=your-random-secret-key-at-least-32-characters-long
+
+# Geoapify API Key (optional - enables address verification and geocoding)
+GEOAPIFY_API_KEY=your_geoapify_api_key
 ```
 
 ### 4. Create Volume Directories
@@ -187,6 +191,27 @@ Example `plugins/config.json`:
 | `ASPNETCORE_ENVIRONMENT` | Runtime environment | `Production` |
 | `JwtSettings__AccessTokenExpirationMinutes` | Access token lifetime | `15` |
 | `JwtSettings__RefreshTokenExpirationDays` | Refresh token lifetime | `7` |
+| `GEOAPIFY_API_KEY` | Geoapify API key for address verification | - |
+
+### Address Verification (Geoapify)
+
+The application uses [Geoapify](https://www.geoapify.com/) for address verification and geocoding. This is **optional** - without an API key, addresses will be saved as entered without verification or geocoding.
+
+**With a Geoapify API key, you get:**
+- Address normalization and standardization
+- Typo correction and formatting
+- Latitude/longitude coordinates for your home location
+- Map preview when verifying addresses
+
+**To get a free API key:**
+
+1. Go to [Geoapify](https://www.geoapify.com/) and create a free account
+2. Navigate to **My Projects** in your dashboard
+3. Create a new project or use the default one
+4. Copy the **API Key** from your project
+5. Add it to your `.env` file as `GEOAPIFY_API_KEY=your_key_here`
+
+The free tier includes **3,000 requests/day**, which is more than sufficient for home use.
 
 ### HTTPS Configuration
 
