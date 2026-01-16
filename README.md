@@ -4,12 +4,58 @@ Open-source household management system for inventory tracking, recipe managemen
 
 ## Features
 
-- **Stock Management** - Track household inventory with barcode scanning
-- **Shopping Lists** - Plan purchases and share lists with household members
-- **Recipes** - Store recipes with ingredient linking and meal planning
-- **Chores** - Schedule and track recurring household tasks
-- **Tasks** - Personal task management and to-do lists
-- **Plugin System** - Extensible product lookup via plugins (e.g., USDA FoodData)
+### Inventory & Pantry Management
+- **Product Database** - Create and manage products with barcodes, images, and nutrition facts
+- **Stock Tracking** - Track inventory by location with expiration dates and opened/sealed status
+- **FEFO Consumption** - First Expired, First Out automatic selection when consuming items
+- **Low Stock Alerts** - Get notified when products are running low
+- **Quick Actions** - Fast add and consume operations with barcode scanning
+
+### Shopping
+- **Shopping Lists** - Create lists organized by store
+- **Store Integration** - Connect to external stores (e.g., Kroger) for product data
+- **Aisle Organization** - Group items by store aisle for efficient shopping trips
+
+### Equipment & Maintenance
+- **Equipment Inventory** - Track all household equipment with hierarchical relationships
+- **Maintenance Records** - Log maintenance activities with dates and descriptions
+- **Document Storage** - Attach manuals, warranties, receipts, and other documents
+- **Photo Gallery** - Visual documentation of equipment
+
+### Household Organization
+- **Storage Bins** - Manage storage containers with QR code labels
+- **Label Printing** - Generate printable label sheets for bins
+- **Home Setup** - Configure home information and utilities
+
+### Chores
+- **Recurring Chores** - Schedule household tasks with recurrence patterns
+- **Execution Logs** - History of completed chores
+- **Skip & Reschedule** - Flexible management when chores aren't needed
+
+### Contacts
+- **Contact Database** - Store personal and professional contacts
+- **Relationships** - Map connections between contacts (family, colleagues)
+- **Sharing** - Share contacts with other household members
+- **Tags & Audit** - Organize with tags and track changes
+
+### User Management
+- **Role-Based Access** - Three roles: Admin (full access), Editor (edit data), Viewer (read-only)
+- **JWT Authentication** - Secure token-based authentication
+- **Multi-User** - Support multiple household members with individual accounts
+
+### Extensibility
+- **Plugin System** - Add product lookup plugins (USDA FoodData, custom plugins)
+- **Store Integrations** - OAuth connections to external retailers
+- **Multi-language** - Localization support
+
+## Tech Stack
+
+- **Runtime**: .NET 10.0
+- **Database**: PostgreSQL 16
+- **Frontend**: Blazor WebAssembly with Server-side rendering
+- **UI Components**: MudBlazor
+- **ORM**: Entity Framework Core 10
+- **Authentication**: JWT with refresh tokens
 
 ## Requirements
 
