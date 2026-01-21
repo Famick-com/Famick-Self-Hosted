@@ -355,6 +355,123 @@ https://your-domain/api/setup/diagnostics
 
 This returns information about how the application sees the incoming request, including forwarded headers, detected scheme, and client IP.
 
+## External Authentication
+
+The application supports external authentication providers for social login and passwordless authentication.
+
+### Supported Providers
+
+| Provider | Description |
+|----------|-------------|
+| **Google** | Sign in with Google accounts |
+| **Apple** | Sign in with Apple ID |
+| **OpenID Connect** | Generic SSO (Keycloak, Okta, Auth0, Azure AD, etc.) |
+| **Passkeys** | Passwordless authentication via WebAuthn/FIDO2 |
+
+### Configuration
+
+Add external auth settings to your `config/appsettings.json`:
+
+```json
+{
+  "ExternalAuth": {
+    "Google": {
+      "Enabled": true,
+      "ClientId": "your-client-id.apps.googleusercontent.com",
+      "ClientSecret": "your-client-secret"
+    },
+    "Apple": {
+      "Enabled": true,
+      "ClientId": "com.your.service.id",
+      "TeamId": "YOUR_TEAM_ID",
+      "KeyId": "YOUR_KEY_ID",
+      "PrivateKey": "-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----"
+    },
+    "OpenIdConnect": {
+      "Enabled": true,
+      "Authority": "https://your-idp.com/realms/your-realm",
+      "ClientId": "your-client-id",
+      "ClientSecret": "your-client-secret",
+      "DisplayName": "Company SSO"
+    },
+    "Passkey": {
+      "Enabled": true,
+      "RelyingPartyId": "your-domain.com",
+      "RelyingPartyName": "Famick Home Management",
+      "Origins": ["https://your-domain.com"],
+      "RequireUserVerification": true
+    }
+  }
+}
+```
+
+Or via environment variables in `docker-compose.yml`:
+
+```yaml
+environment:
+  # Google
+  - ExternalAuth__Google__Enabled=true
+  - ExternalAuth__Google__ClientId=your-client-id
+  - ExternalAuth__Google__ClientSecret=your-client-secret
+
+  # Passkey (no external credentials needed)
+  - ExternalAuth__Passkey__Enabled=true
+  - ExternalAuth__Passkey__RelyingPartyId=your-domain.com
+  - ExternalAuth__Passkey__RelyingPartyName=Famick Home Management
+  - ExternalAuth__Passkey__Origins__0=https://your-domain.com
+```
+
+### Google OAuth Setup
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a project and navigate to **APIs & Services → Credentials**
+3. Create an **OAuth client ID** (Web application)
+4. Add redirect URI: `https://YOUR-DOMAIN/auth/external/callback/google`
+5. Copy Client ID and Client Secret to configuration
+
+### Apple Sign In Setup
+
+1. Go to [Apple Developer Portal](https://developer.apple.com/)
+2. Create an **App ID** with "Sign In with Apple" capability
+3. Create a **Services ID** for your web app
+4. Configure return URL: `https://YOUR-DOMAIN/auth/external/callback/apple`
+5. Create a **private key** for client authentication
+6. Copy Team ID, Key ID, Client ID, and Private Key to configuration
+
+### OpenID Connect Setup
+
+Works with any OIDC-compliant provider. Common examples:
+
+**Keycloak:**
+```
+Authority: https://keycloak.example.com/realms/your-realm
+```
+
+**Okta:**
+```
+Authority: https://your-org.okta.com
+```
+
+**Azure AD:**
+```
+Authority: https://login.microsoftonline.com/YOUR-TENANT-ID/v2.0
+```
+
+Add redirect URI in your provider: `https://YOUR-DOMAIN/auth/external/callback/oidc`
+
+### Passkey Setup
+
+Passkeys require no external credentials - just domain configuration:
+
+| Setting | Description |
+|---------|-------------|
+| `RelyingPartyId` | Your domain without protocol (e.g., `example.com`) |
+| `RelyingPartyName` | Display name shown to users |
+| `Origins` | Allowed origins including protocol (e.g., `https://example.com`) |
+| `RequireUserVerification` | Require biometric/PIN verification |
+
+**Note:** For localhost development, use `RelyingPartyId: localhost` and include both HTTP and HTTPS origins.
+
 ## Optional: Database Administration
 
 To include pgAdmin for database management:
