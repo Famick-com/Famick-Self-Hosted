@@ -6,7 +6,7 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:10.0-preview AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
@@ -42,12 +42,13 @@ WORKDIR /app
 # Install Kerberos libraries for Npgsql (eliminates warning)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libkrb5-3 \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=publish /app/publish .
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:80/health || exit 1
+    CMD curl -fsS http://localhost:80/health || exit 1
 
 ENTRYPOINT ["dotnet", "Famick.HomeManagement.Web.dll"]

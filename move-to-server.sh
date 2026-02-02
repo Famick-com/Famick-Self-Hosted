@@ -10,6 +10,14 @@ if [ $# -lt 2 ]; then
     exit 1
 fi
 
+CURRENT_DIR=$(pwd)
+cd ./homemanagement || exit 1
+git pull origin main
+cd "$CURRENT_DIR" || exit 1
+cd ./homemanagement-shared || exit 1
+git pull origin main
+cd "$CURRENT_DIR" || exit 1
+
 SERVER="$1"
 REMOTE_PATH="$2"
 PLATFORM="${3:-linux/amd64}"
