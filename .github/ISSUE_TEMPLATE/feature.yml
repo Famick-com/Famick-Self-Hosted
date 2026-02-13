@@ -1,0 +1,94 @@
+name: Feature
+description: A customer-visible feature or capability
+title: "[Feature]: "
+labels: ["feature"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / Opportunity
+      description: What problem does this feature solve and for whom?
+      placeholder: |
+        As a <user>,
+        I want <capability>,
+        so that <benefit>.
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: High-level description of the solution (not implementation details).
+      placeholder: |
+        Describe the behavior, not the code.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: Conditions that must be met for this feature to be considered complete.
+      placeholder: |
+        - Given ...
+          When ...
+          Then ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: non_goals
+    attributes:
+      label: Non-Goals
+      description: Explicitly out of scope to prevent creep.
+      placeholder: |
+        - Not supporting ...
+        - Not addressing ...
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - P0 – Must have
+        - P1 – Should have
+        - P2 – Nice to have
+    validations:
+      required: true
+
+  - type: dropdown
+    id: risk
+    attributes:
+      label: Risk / Complexity
+      options:
+        - Low
+        - Medium
+        - High
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: Other issues, systems, or external dependencies.
+      placeholder: |
+        - Depends on #123
+        - Requires API X
+    validations:
+      required: false
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes / Design Links
+      description: Architecture notes, diagrams, or links.
+      placeholder: |
+        - ADR link
+        - Figma link
+        - Doc link
+    validations:
+      required: false

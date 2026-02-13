@@ -1,0 +1,118 @@
+name: Issue
+description: Bug, task, or general work item
+title: "[Issue]: "
+labels: []
+body:
+  - type: dropdown
+    id: type
+    attributes:
+      label: Issue Type
+      options:
+        - Bug
+        - Task
+        - Improvement
+        - Tech Debt
+        - Spike / Research
+    validations:
+      required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: Clear and concise description of the issue.
+      placeholder: |
+        What is happening or what needs to be done?
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context / Background
+      description: Why this issue exists. Link to features, discussions, or incidents.
+      placeholder: |
+        - Related feature: #123
+        - Observed in prod on 2026-02-10
+    validations:
+      required: false
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Outcome
+      description: What does “done” look like?
+      placeholder: |
+        The issue is resolved when...
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce (for bugs)
+      description: Required for bugs.
+      placeholder: |
+        1. Go to...
+        2. Click...
+        3. Observe...
+    validations:
+      required: false
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: Verifiable conditions for completion.
+      placeholder: |
+        - Given ...
+          When ...
+          Then ...
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - P0 – Critical
+        - P1 – High
+        - P2 – Medium
+        - P3 – Low
+    validations:
+      required: true
+
+  - type: dropdown
+    id: risk
+    attributes:
+      label: Risk / Complexity
+      options:
+        - Low
+        - Medium
+        - High
+    validations:
+      required: false
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies / Blockers
+      description: Other issues, systems, or external dependencies.
+      placeholder: |
+        - Blocked by #456
+        - Depends on API X
+    validations:
+      required: false
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes / Links
+      description: Logs, screenshots, design docs, or references.
+      placeholder: |
+        - Log snippet
+        - Screenshot
+        - Design doc
+    validations:
+      required: false
